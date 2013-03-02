@@ -11,25 +11,16 @@ rm(list=ls())
 pars <- c(	
 		contact	= .9,  	# contact rate
 		recov 	= .1,   # recovery rate
-		ldeath  =  .1,
+		ldeath  = .1,
 		hdeath	= .2,
-		vac		=.1,
-		aq		=.03,
-		birth	=.5,
+		vac		= .07,
+		aq		= .3,
+		birth	= .3,
 		civ		=.01)	
-
-#Parms that produce a cyclic disease
-#contact	= .9,  
-#			recov 	= .1,  
-#			ldeath  =  .1,
-#			hdeath	= .1,
-#			vac		=.003,
-#			aq		=.03,
-#			birth	=.3)	
 
 #	Then, the initial values of each state variable:
 
-init.values <- c(S =.5,A=.49,V=.005,I =.005, R = 0,C=.001)
+init.values <- c(S =.5,A=.49,V=.005,I =.005, R = 0,C=.001,H=0,L=0)
 
 #	The times we want to see
 
@@ -37,17 +28,22 @@ times <- seq(0, 200, by = 1)
 
 #	Now we can define the differential equation model:
 
+
+#Birth should be of all
+#
 SAVIR <- function(time, y.values, parameters) {
 	with(as.list(c(y.values, parameters)), {
 				
-				dS.dt = birth/2*S-ldeath*S-vac*S-aq*S-contact*I*S+C*A
-				dA.dt = aq*S-hdeath*A-C*A
+				dS.dt =	birth*S-aq*S-vac*S-contact*I*S-ldeath*S
+				dA.dt = aq*S-C*A-hdeath*A
 				dV.dt = vac*S-ldeath*V
 				dI.dt = contact*I*S-hdeath*I-recov*I
 				dR.dt = recov*I-hdeath*R
 				dC.dt = civ
+				dH.dt = hdeath*(R+I+A)
+				dL.dt = ldeath*(S+V)
 				
-				return(list(c(dS.dt,dA.dt,dV.dt, dI.dt, dR.dt,dC.dt)))
+				return(list(c(dS.dt,dA.dt,dV.dt, dI.dt, dR.dt,dC.dt,dH.dt,dL.dt)))
 			})
 }
 
@@ -64,5 +60,11 @@ matplot(out$time, out[ ,2:6], type = "l", xlab = "time",
 
 legend("topright", c("Susceptible","Aqcuired Immunity","Vacinnated", "Infectious", "Removed"),
 		col = 1:5, lty = 1:5)
+#x11()
+#matplot(out$time, out[ ,7:8], type = "l", xlab = "time", 
+# ylab = "num", main = "Deaths", lwd = 2)
+
+#legend("topright", c("High","Low"),
+#		col = 1:2, lty = 1:2)
 
 tail(out)
