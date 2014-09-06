@@ -9,28 +9,16 @@ rm(list=ls())
 #	First, the parameters for our model:
 
 pars <- c(	
-		contact	= .9,  	# contact rate
-		recov 	= .1,   # recovery rate
+		contact	= .9,  	
+		recov 	= .1,   
 		ldeath  = .1,
 		hdeath	= .2,
 		vac		= .07,
 		aq		= .3,
-		birth	= .3,
+		birth	= .5,
 		civ		=.01)	
-
-#	Then, the initial values of each state variable:
-
 init.values <- c(S =.5,A=.49,V=.005,I =.005, R = 0,C=.001,H=0,L=0)
-
-#	The times we want to see
-
-times <- seq(0, 200, by = 1)
-
-#	Now we can define the differential equation model:
-
-
-#Birth should be of all
-#
+times <- seq(0, 300, by = 1)
 SAVIR <- function(time, y.values, parameters) {
 	with(as.list(c(y.values, parameters)), {
 				
